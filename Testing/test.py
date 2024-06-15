@@ -28,7 +28,7 @@ print(test_endpoint())
 "iat":1718394563,
 "exp":1718398163,
 "email":"string@gmail.com",
-"email_verified":false,
+"email_verified":False,
 "firebase":{
     "identities":{
          "email":["string@gmail.com"]
