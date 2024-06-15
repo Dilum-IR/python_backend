@@ -3,3 +3,4 @@ uvicorn
 pyrebase4
 firebase_admin
 setuptools
+google-generativeai
