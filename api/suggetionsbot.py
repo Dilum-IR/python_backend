@@ -17,6 +17,7 @@ from langchain_core.prompts import MessagesPlaceholder
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 import time
 import json  
+import ast
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 class SuggestionsBot:
@@ -90,7 +91,8 @@ class SuggestionsBot:
         except (json.JSONDecodeError, ValueError):
             answer_list = response
 
-        print(answer_list," Time:",elapsed_time)
+        ans = ast.literal_eval(answer)
+        print(ans," Time:",elapsed_time)
 
-        return answer
+        return ans
 
