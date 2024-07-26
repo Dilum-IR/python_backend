@@ -1,7 +1,8 @@
 {
+    "devCommand":"uvicorn main:app --host 127.0.0.1 --port 9000",
     "builds":[
          {
-            "src":"api/main.py",
+            "src":"/api/main.py",
             "use":"@vercel/python"
          }
     ],
