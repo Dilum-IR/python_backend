@@ -1,6 +1,6 @@
 import pyrebase
-import firebase_admin
-from firebase_admin import credentials,auth
+# import firebase_admin
+# from firebase_admin import credentials,auth
 from typing import Union
 from fastapi import FastAPI
 import uvicorn
@@ -19,9 +19,9 @@ from api.suggetionsbot import SuggestionsBot
 app = FastAPI()
 bot = SuggestionsBot()
 
-if not firebase_admin._apps:
-    cred = credentials.Certificate("../serviceAccountKey.json")
-    firebase_admin.initialize_app(cred)
+# if not firebase_admin._apps:
+#     cred = credentials.Certificate("../serviceAccountKey.json")
+#     firebase_admin.initialize_app(cred)
 
 
 firebaseConfig = {
@@ -47,47 +47,47 @@ def read_item(id: int, q: Union[str, None] = None):
     return {"item_id": id, "q": q}
 
 
-@app.post("/signup")
-async def signup(user_data:SignUpSchema):
+# @app.post("/signup")
+# async def signup(user_data:SignUpSchema):
 
-    try:
-        user = auth.create_user(email=user_data.email,password=user_data.password)
+#     try:
+#         user = auth.create_user(email=user_data.email,password=user_data.password)
 
-        return JSONResponse(content={
-            "message":f"Usesr account created user id is {user.uid}"
-        },status_code=200,)
-    except auth.EmailAlreadyExistsError:
-        raise HTTPException(status_code=400,detail=f"Account already created for the {user_data.email}")
+#         return JSONResponse(content={
+#             "message":f"Usesr account created user id is {user.uid}"
+#         },status_code=200,)
+#     except auth.EmailAlreadyExistsError:
+#         raise HTTPException(status_code=400,detail=f"Account already created for the {user_data.email}")
 
 
-@app.post("/login")
-async def creatae_access_token(user_data:LoginSchema):
+# @app.post("/login")
+# async def creatae_access_token(user_data:LoginSchema):
 
-    try:
-        user = firebase.auth().sign_in_with_email_and_password(email=user_data.email,password=user_data.password)
+#     try:
+#         user = firebase.auth().sign_in_with_email_and_password(email=user_data.email,password=user_data.password)
 
-        token = user['idToken']
+#         token = user['idToken']
 
-        return JSONResponse(content={
-            "token":f"User account token is {token}"
-        },status_code=200,)
-    except auth.EmailAlreadyExistsError:
-        raise HTTPException(status_code=400,detail=f"Invalid credintials")
+#         return JSONResponse(content={
+#             "token":f"User account token is {token}"
+#         },status_code=200,)
+#     except auth.EmailAlreadyExistsError:
+#         raise HTTPException(status_code=400,detail=f"Invalid credintials")
     
-@app.post("/ping")
-async def validate_token(request:Request):
+# @app.post("/ping")
+# async def validate_token(request:Request):
 
-    headers = request.headers
-    jwt = headers.get("authorization")
+#     headers = request.headers
+#     jwt = headers.get("authorization")
 
-    try:
-        verify_user = auth.verify_id_token(jwt)
+#     try:
+#         verify_user = auth.verify_id_token(jwt)
 
-        return JSONResponse(content={
-            "token":verify_user
-        },status_code=200,)
-    except auth.EmailAlreadyExistsError:
-        raise HTTPException(status_code=400,detail=f"Invalid authorization")
+#         return JSONResponse(content={
+#             "token":verify_user
+#         },status_code=200,)
+#     except auth.EmailAlreadyExistsError:
+#         raise HTTPException(status_code=400,detail=f"Invalid authorization")
  
 @app.post("/predict/")
 async def predict(request: QuestionSchema):
