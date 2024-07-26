@@ -2,7 +2,7 @@ python-dotenv
 fastapi
 uvicorn
 pyrebase4
-firebase_admin
+# firebase_admin
 setuptools
 # google-generativeai
 langchain
