@@ -7,3 +7,7 @@ class SignUpSchema(BaseModel):
 class LoginSchema(BaseModel):
     email:str
     password:str
+
+class QuestionSchema(BaseModel):
+    question:str
+    history:list

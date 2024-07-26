@@ -7,15 +7,20 @@ import uvicorn
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
+import sys
+import os
+# Add the parent directory to the system path
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-
-from Models.models import LoginSchema,SignUpSchema
-
+from pydantic import BaseModel
+from Models.models import LoginSchema,SignUpSchema,QuestionSchema
+from api.suggetionsbot import SuggestionsBot
 
 app = FastAPI()
+bot = SuggestionsBot()
 
 if not firebase_admin._apps:
-    cred = credentials.Certificate("serviceAccountKey.json")
+    cred = credentials.Certificate("../serviceAccountKey.json")
     firebase_admin.initialize_app(cred)
 
 
@@ -83,7 +88,14 @@ async def validate_token(request:Request):
         },status_code=200,)
     except auth.EmailAlreadyExistsError:
         raise HTTPException(status_code=400,detail=f"Invalid authorization")
-
+ 
+@app.post("/predict/")
+async def predict(request: QuestionSchema):
+    try:
+        response = bot.get_response(request.question, request.history)
+        return {"suggetions":response}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     uvicorn.run("main:app",host="127.0.0.1",port=9000,reload=True)
