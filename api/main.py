@@ -14,7 +14,7 @@ import json
 # Add the parent directory to the system path
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from pydantic import BaseModel
+# from pydantic import BaseModel
 from Models.models import LoginSchema,SignUpSchema,QuestionSchema
 from api.suggetionsbot import SuggestionsBot
 
@@ -37,7 +37,7 @@ firebaseConfig = {
   "databaseURL":""
 }
 
-firebase = pyrebase.initialize_app(firebaseConfig)
+# firebase = pyrebase.initialize_app(firebaseConfig)
 
 @app.get("/")
 def read_root():
@@ -124,33 +124,33 @@ def read_item(id: int, q: Union[str, None] = None):
 #             "suggestions": ""
 #         }
 
-# @app.post("/predict_single/")
-# async def predict(request: QuestionSchema):
-#     try:
-#         response = bot.get_single_response(request.question,request.history,request.personal_data)
-#         return {
-#             "status_code":200,
-#             "msg":"success",
-#             "suggetions":response
-#         }
-#     except HTTPException as e:
-#         return {
-#             "status_code": e.status_code,
-#             "msg": str(e.detail),
-#             "suggestions": []
-#         }
-#     except ValueError as e:
-#         return {
-#             "status_code": 400,
-#             "msg": str(e),
-#             "suggestions": []
-#         }
-#     except Exception as e:
-#         return {
-#             "status_code": 500,
-#             "msg": "An unexpected error occurred",
-#             "suggestions": []
-#         }
+@app.post("/predict_single/")
+async def predict(request: QuestionSchema):
+    try:
+        response = bot.get_single_response(request.question,request.history,request.personal_data)
+        return {
+            "status_code":200,
+            "msg":"success",
+            "suggetions":response
+        }
+    except HTTPException as e:
+        return {
+            "status_code": e.status_code,
+            "msg": str(e.detail),
+            "suggestions": []
+        }
+    except ValueError as e:
+        return {
+            "status_code": 400,
+            "msg": str(e),
+            "suggestions": []
+        }
+    except Exception as e:
+        return {
+            "status_code": 500,
+            "msg": "An unexpected error occurred",
+            "suggestions": []
+        }
         # raise HTTPException(status_code=500, detail=str(e))
     
 if __name__ == "__main__":
