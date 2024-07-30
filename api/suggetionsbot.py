@@ -20,8 +20,6 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 from langchain_core.output_parsers import StrOutputParser
 from system.system_msg import system_prompt,large_question_answer_dataset
 
-user_details = {}
-
 class SuggestionsBot:
     def __init__(self):
         self.load_env_variables()
@@ -35,14 +33,15 @@ class SuggestionsBot:
         self.api_key = os.getenv("OPENAI_API_KEY")
 
     def get_examples(self):
-        # return [
-        #     {"Question": "Did you eat ?", "Answer": ["Yes", "No"]},
-        #     {"Question": "Do you have a car ?", "Answer": ["Yes", "No"]},
-        #     {"Question": "Where are you now ?", "Answer": ["In the home", "In the school", "another place"]},
-        #     {"Question": "There is a car", "Answer": ["yeah I see, man"]},
-        #     # {"Question": "What is your name ? who are you ?", "Answer": ["My Name is Dilum Induwara"]},
-        # ]
-        return large_question_answer_dataset
+        return [
+            {"Question": "Did you eat ?", "Answer": ["Yes", "No"]},
+            {"Question": "Do you have a car ?", "Answer": ["Yes", "No"]},
+            {"Question": "Where are you now ?", "Answer": ["In the home", "In the school", "another place"]},
+            {"Question": "There is a car", "Answer": ["yeah I see, man"]},
+            # {"Question": "What is your name ? who are you ?", "Answer": ["My Name is Dilum Induwara"]},
+        ]
+
+        # return large_question_answer_dataset
 
     def create_few_shot_prompt(self):
         example_prompt = PromptTemplate(
@@ -69,53 +68,58 @@ class SuggestionsBot:
     
     def get_single_response(self,input,user_history,personal_data):
 
-        # self.create_chat_prompt_template(personal_data)
-        user_name = "My name is {name}. And you."
-        user_email = "My email is {email}."
+        try:
+            
+            # self.create_chat_prompt_template(personal_data)
+            user_name = "My name is {name}. And you."
+            user_email = "My email is {email}."
 
-        new_name =  user_name.format(**personal_data[0])
-        new_email =  user_email.format(**personal_data[1])
-        
-        history = [
-            HumanMessage(content="what is your name"), 
-            AIMessage(content=new_name), 
-            HumanMessage(content="what is your email"),
-            AIMessage(content=new_email),
-        ]
-        
-        # Insert history messages after the first messages
-        for item in user_history:
+            new_name =  user_name.format(**personal_data[0])
+            new_email =  user_email.format(**personal_data[1])
+            
+            history = [
+                HumanMessage(content="what is your name"), 
+                AIMessage(content=new_name), 
+                HumanMessage(content="what is your email"),
+                AIMessage(content=new_email),
+            ]
+            
+            # Insert history messages after the first messages
+            for item in user_history:
 
-            if item["role"] == "user":
-                history.append(HumanMessage(content=item["content"]))
-            elif item["role"] == "assistant":
-                history.append(AIMessage(content=item["content"]))
+                if item["role"] == "user":
+                    history.append(HumanMessage(content=item["content"]))
+                elif item["role"] == "assistant":
+                    history.append(AIMessage(content=item["content"]))
 
-        parser = StrOutputParser()
-        # print(self.few_shot_prompt)
-        chain = self.prompt | self.llm | parser
+            parser = StrOutputParser()
+            # print(self.few_shot_prompt)
+            chain = self.prompt | self.llm | parser
 
-        response = chain.invoke({ "history": history ,"input": [HumanMessage(content=input)]})
+            response = chain.invoke({ "history": history ,"input": [HumanMessage(content=input)]})
 
-        # try:
-        #     answer_start = response.find("Answer: ") + len("Answer: ")
-        #     answer = response[answer_start:].strip()
-        #     answer_list = json.loads(answer)
-        #     ans = ast.literal_eval(answer)
-        # except (json.JSONDecodeError, ValueError):
-        #     answer_list = response
+            # try:
+            #     answer_start = response.find("Answer: ") + len("Answer: ")
+            #     answer = response[answer_start:].strip()
+            #     answer_list = json.loads(answer)
+            #     ans = ast.literal_eval(answer)
+            # except (json.JSONDecodeError, ValueError):
+            #     answer_list = response
 
-        # add latest question and response for the chat history
-        # history.extend(
-        #     [
-        #     HumanMessage(content=input),
-        #     AIMessage(content=response)
-        #     ]
-        # )
+            # add latest question and response for the chat history
+            # history.extend(
+            #     [
+            #     HumanMessage(content=input),
+            #     AIMessage(content=response)
+            #     ]
+            # )
 
-        # print(history)
-        ans = self.process_answer(response)
-        return ans
+            # print(history)
+            ans = self.process_answer(response)
+            return ans
+
+        except:
+            return []
 
     def get_response(self, user_input, history=[]):
 
