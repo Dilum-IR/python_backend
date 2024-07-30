@@ -93,35 +93,35 @@ def read_item(id: int, q: Union[str, None] = None):
 
 
 # current accurate endpoint
-@app.post("/predict/")
-async def predict(request: QuestionSchema):
-    try:
-        response = bot.get_response(request.question, request.history)
-        obj = {
-            "status_code":200,
-            "msg":"success",
-            "suggetions":response
-        }        
-        return obj
+# @app.post("/predict/")
+# async def predict(request: QuestionSchema):
+#     try:
+#         response = bot.get_response(request.question, request.history)
+#         obj = {
+#             "status_code":200,
+#             "msg":"success",
+#             "suggetions":response
+#         }        
+#         return obj
 
-    except HTTPException as e:
-        return {
-            "status_code": e.status_code,
-            "msg": str(e.detail),
-            "suggestions": ""
-        }
-    except ValueError as e:
-        return {
-            "status_code": 400,
-            "msg": str(e),
-            "suggestions": ""
-        }
-    except Exception as e:
-        return {
-            "status_code": 500,
-            "msg": "An unexpected error occurred",
-            "suggestions": ""
-        }
+#     except HTTPException as e:
+#         return {
+#             "status_code": e.status_code,
+#             "msg": str(e.detail),
+#             "suggestions": ""
+#         }
+#     except ValueError as e:
+#         return {
+#             "status_code": 400,
+#             "msg": str(e),
+#             "suggestions": ""
+#         }
+#     except Exception as e:
+#         return {
+#             "status_code": 500,
+#             "msg": "An unexpected error occurred",
+#             "suggestions": ""
+#         }
 
 @app.post("/predict_single/")
 async def predict(request: QuestionSchema):
