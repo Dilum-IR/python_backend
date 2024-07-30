@@ -14,8 +14,6 @@ from langchain.prompts.prompt import PromptTemplate
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.prompts import MessagesPlaceholder
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-import time
-import json  
 import ast
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -28,15 +26,15 @@ class SuggestionsBot:
     def __init__(self):
         self.load_env_variables()
         self.llm = ChatOpenAI(model='gpt-3.5-turbo',temperature=0)
-        # self.examples = self.get_examples()
-        # self.few_shot_prompt = self.create_few_shot_prompt()
+        self.examples = self.get_examples()
+        self.few_shot_prompt = self.create_few_shot_prompt()
         self.prompt = self.create_chat_prompt_template()
 
     def load_env_variables(self):
         load_dotenv()
         self.api_key = os.getenv("OPENAI_API_KEY")
 
-    # def get_examples(self):
+    def get_examples(self):
         # return [
         #     {"Question": "Did you eat ?", "Answer": ["Yes", "No"]},
         #     {"Question": "Do you have a car ?", "Answer": ["Yes", "No"]},
@@ -44,20 +42,20 @@ class SuggestionsBot:
         #     {"Question": "There is a car", "Answer": ["yeah I see, man"]},
         #     # {"Question": "What is your name ? who are you ?", "Answer": ["My Name is Dilum Induwara"]},
         # ]
-        # return large_question_answer_dataset
+        return large_question_answer_dataset
 
-    # def create_few_shot_prompt(self):
-    #     example_prompt = PromptTemplate(
-    #         input_variables=["Question", "Answer"],
-    #         template="{Answer}"
-    #     )
+    def create_few_shot_prompt(self):
+        example_prompt = PromptTemplate(
+            input_variables=["Question", "Answer"],
+            template="{Answer}"
+        )
 
-    #     return FewShotPromptTemplate(
-    #         examples=self.examples,
-    #         example_prompt=example_prompt,
-    #         suffix="Question: {input}",
-    #         input_variables=["input"]
-    #     )
+        return FewShotPromptTemplate(
+            examples=self.examples,
+            example_prompt=example_prompt,
+            suffix="Question: {input}",
+            input_variables=["input"]
+        )
 
     def create_chat_prompt_template(self):
 
@@ -119,25 +117,25 @@ class SuggestionsBot:
         ans = self.process_answer(response)
         return ans
 
-    # def get_response(self, user_input, history=[]):
+    def get_response(self, user_input, history=[]):
 
-    #     # print(self.few_shot_prompt)
+        # print(self.few_shot_prompt)
 
-    #     final_prompt = [
-    #         {"role": "system", "content": "If some one ask some personal details from you. then if you have it please response with give that data. If you haven any that data then response for message is ('I am don't know it.'). Now your are not a chatbot. your are now human. Your name is Dilum Induwara. No need metion another parts."},
-    #         {"role": "system", "content": self.few_shot_prompt.format(input=user_input)},
-    #         {"role": "user", "content": user_input}
-    #     ]
+        final_prompt = [
+            {"role": "system", "content": "If some one ask some personal details from you. then if you have it please response with give that data. If you haven any that data then response for message is ('I am don't know it.'). Now your are not a chatbot. your are now human. Your name is Dilum Induwara. No need metion another parts."},
+            {"role": "system", "content": self.few_shot_prompt.format(input=user_input)},
+            {"role": "user", "content": user_input}
+        ]
         
-    #     # Insert history messages after the first messages
-    #     for item in history:
-    #         final_prompt.insert(2, item) 
+        # Insert history messages after the first messages
+        for item in history:
+            final_prompt.insert(2, item) 
 
-    #     response = self.llm(self.few_shot_prompt.format(input=user_input)).content
+        response = self.llm(self.few_shot_prompt.format(input=user_input)).content
         
-    #     ans = self.process_answer(response)
-    #     # print(ans)
-    #     return ans
+        ans = self.process_answer(response)
+        # print(ans)
+        return ans
 
     def process_answer(self,answer_str):
         if answer_str.startswith("Answer: "):
