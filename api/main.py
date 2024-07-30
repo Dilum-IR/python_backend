@@ -124,33 +124,33 @@ def read_item(id: int, q: Union[str, None] = None):
 #             "suggestions": ""
 #         }
 
-@app.post("/predict_single/")
-async def predict(request: QuestionSchema):
-    try:
-        response = bot.get_single_response(request.question,request.history,request.personal_data)
-        return {
-            "status_code":200,
-            "msg":"success",
-            "suggetions":response
-        }
-    except HTTPException as e:
-        return {
-            "status_code": e.status_code,
-            "msg": str(e.detail),
-            "suggestions": ""
-        }
-    except ValueError as e:
-        return {
-            "status_code": 400,
-            "msg": str(e),
-            "suggestions": ""
-        }
-    except Exception as e:
-        return {
-            "status_code": 500,
-            "msg": "An unexpected error occurred",
-            "suggestions": ""
-        }
+# @app.post("/predict_single/")
+# async def predict(request: QuestionSchema):
+#     try:
+#         response = bot.get_single_response(request.question,request.history,request.personal_data)
+#         return {
+#             "status_code":200,
+#             "msg":"success",
+#             "suggetions":response
+#         }
+#     except HTTPException as e:
+#         return {
+#             "status_code": e.status_code,
+#             "msg": str(e.detail),
+#             "suggestions": []
+#         }
+#     except ValueError as e:
+#         return {
+#             "status_code": 400,
+#             "msg": str(e),
+#             "suggestions": []
+#         }
+#     except Exception as e:
+#         return {
+#             "status_code": 500,
+#             "msg": "An unexpected error occurred",
+#             "suggestions": []
+#         }
         # raise HTTPException(status_code=500, detail=str(e))
     
 if __name__ == "__main__":
