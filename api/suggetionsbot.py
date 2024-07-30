@@ -5,7 +5,6 @@
 # Original file is located at
 #     https://colab.research.google.com/drive/1_7o8brYHWrAiZlPqyAzNNOjGh6L2YrVu
 # """
-
 import os
 from dotenv import load_dotenv
 import warnings
@@ -20,79 +19,138 @@ import json
 import ast
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
+from langchain_core.output_parsers import StrOutputParser
+from system.system_msg import system_prompt,large_question_answer_dataset
+
+user_details = {}
+
 class SuggestionsBot:
     def __init__(self):
         self.load_env_variables()
-        self.llm = ChatOpenAI(model='gpt-3.5-turbo', temperature=0)
-        self.examples = self.get_examples()
-        self.few_shot_prompt = self.create_few_shot_prompt()
+        self.llm = ChatOpenAI(model='gpt-3.5-turbo',temperature=0)
+        # self.examples = self.get_examples()
+        # self.few_shot_prompt = self.create_few_shot_prompt()
         self.prompt = self.create_chat_prompt_template()
 
     def load_env_variables(self):
         load_dotenv()
         self.api_key = os.getenv("OPENAI_API_KEY")
 
-    def get_examples(self):
-        return [
-            {"Question": "Did you eat ?", "Answer": ["Yes", "No"]},
-            {"Question": "Do you have a car ?", "Answer": ["Yes", "No"]},
-            {"Question": "Where are you now ?", "Answer": ["In the home", "In the school", "another place"]},
-            {"Question": "There is a car", "Answer": ["yeah I see, man"]},
-            {"Question": "What is your name ? who are you ?", "Answer": ["My Name is Dilum Induwara"]},
-        ]
+    # def get_examples(self):
+        # return [
+        #     {"Question": "Did you eat ?", "Answer": ["Yes", "No"]},
+        #     {"Question": "Do you have a car ?", "Answer": ["Yes", "No"]},
+        #     {"Question": "Where are you now ?", "Answer": ["In the home", "In the school", "another place"]},
+        #     {"Question": "There is a car", "Answer": ["yeah I see, man"]},
+        #     # {"Question": "What is your name ? who are you ?", "Answer": ["My Name is Dilum Induwara"]},
+        # ]
+        # return large_question_answer_dataset
 
-    def create_few_shot_prompt(self):
-        example_prompt = PromptTemplate(
-            input_variables=["Question", "Answer"],
-            template="Question: {Question}\nAnswer: {Answer}"
-        )
-        return FewShotPromptTemplate(
-            examples=self.examples,
-            example_prompt=example_prompt,
-            suffix="Question: {input}",
-            input_variables=["input"]
-        )
+    # def create_few_shot_prompt(self):
+    #     example_prompt = PromptTemplate(
+    #         input_variables=["Question", "Answer"],
+    #         template="{Answer}"
+    #     )
+
+    #     return FewShotPromptTemplate(
+    #         examples=self.examples,
+    #         example_prompt=example_prompt,
+    #         suffix="Question: {input}",
+    #         input_variables=["input"]
+    #     )
 
     def create_chat_prompt_template(self):
+
         return ChatPromptTemplate.from_messages(
             [
-                SystemMessage(content="If some one ask some personal details from you. then if you have it please response with give that data. If you haven any that data then response for message is ('I am don't know it.'). Now your are not a chatbot. your are now human. Your name is Dilum Induwara. No need metion another parts."),
+                SystemMessage(content=system_prompt),
                 MessagesPlaceholder(variable_name="history"),
                 MessagesPlaceholder(variable_name="input")
             ]
         )
+    
+    def get_single_response(self,input,user_history,personal_data):
 
-    def get_response(self, user_input, history=[]):
-        final_prompt = [
-            {"role": "system", "content": "If some one ask some personal details from you. then if you have it please response with give that data. If you haven any that data then response for message is ('I am don't know it.'). Now your are not a chatbot. your are now human. Your name is Dilum Induwara. No need metion another parts."},
-            {"role": "system", "content": self.few_shot_prompt.format(input=user_input)},
-            {"role": "user", "content": user_input}
+        # self.create_chat_prompt_template(personal_data)
+        user_name = "My name is {name}. And you."
+        user_email = "My email is {email}."
+
+        new_name =  user_name.format(**personal_data[0])
+        new_email =  user_email.format(**personal_data[1])
+        
+        history = [
+            HumanMessage(content="what is your name"), 
+            AIMessage(content=new_name), 
+            HumanMessage(content="what is your email"),
+            AIMessage(content=new_email),
         ]
         
         # Insert history messages after the first messages
-        for item in history:
-            final_prompt.insert(2, item) 
+        for item in user_history:
 
-        start_time = time.time()
+            if item["role"] == "user":
+                history.append(HumanMessage(content=item["content"]))
+            elif item["role"] == "assistant":
+                history.append(AIMessage(content=item["content"]))
 
-        response = self.llm(self.few_shot_prompt.format(input=user_input)).content
-        
-        end_time = time.time()
+        parser = StrOutputParser()
+        # print(self.few_shot_prompt)
+        chain = self.prompt | self.llm | parser
 
-        # Calculate Time
-        elapsed_time = end_time - start_time
+        response = chain.invoke({ "history": history ,"input": [HumanMessage(content=input)]})
 
-        # Process response to extract the answer list
-        try:
-            # Assuming the response is in the format "Answer: ['I am doing well, thank you for asking']"
-            answer_start = response.find("Answer: ") + len("Answer: ")
-            answer = response[answer_start:].strip()
-            answer_list = json.loads(answer)
-        except (json.JSONDecodeError, ValueError):
-            answer_list = response
+        # try:
+        #     answer_start = response.find("Answer: ") + len("Answer: ")
+        #     answer = response[answer_start:].strip()
+        #     answer_list = json.loads(answer)
+        #     ans = ast.literal_eval(answer)
+        # except (json.JSONDecodeError, ValueError):
+        #     answer_list = response
 
-        ans = ast.literal_eval(answer)
-        print(ans," Time:",elapsed_time)
+        # add latest question and response for the chat history
+        # history.extend(
+        #     [
+        #     HumanMessage(content=input),
+        #     AIMessage(content=response)
+        #     ]
+        # )
 
+        # print(history)
+        ans = self.process_answer(response)
         return ans
 
+    # def get_response(self, user_input, history=[]):
+
+    #     # print(self.few_shot_prompt)
+
+    #     final_prompt = [
+    #         {"role": "system", "content": "If some one ask some personal details from you. then if you have it please response with give that data. If you haven any that data then response for message is ('I am don't know it.'). Now your are not a chatbot. your are now human. Your name is Dilum Induwara. No need metion another parts."},
+    #         {"role": "system", "content": self.few_shot_prompt.format(input=user_input)},
+    #         {"role": "user", "content": user_input}
+    #     ]
+        
+    #     # Insert history messages after the first messages
+    #     for item in history:
+    #         final_prompt.insert(2, item) 
+
+    #     response = self.llm(self.few_shot_prompt.format(input=user_input)).content
+        
+    #     ans = self.process_answer(response)
+    #     # print(ans)
+    #     return ans
+
+    def process_answer(self,answer_str):
+        if answer_str.startswith("Answer: "):
+            value_str = answer_str[len("Answer: "):]
+        else:
+            value_str = answer_str
+        
+        try:
+            value = ast.literal_eval(value_str)
+            if isinstance(value, list):
+                return value
+        except (ValueError, SyntaxError):
+            pass
+
+        return [value_str]
+    
