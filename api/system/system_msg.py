@@ -144,5 +144,5 @@ user_details = {
 #     i = i+1
     # system_prompt += f"\nExample {i} :\nQuestion: \"{question}\"\nResponse: {answers}\n"
 
-formatted_string = system_prompt.format(**user_details)
+# formatted_string = system_prompt.format(**user_details)
 # print(formatted_string)
