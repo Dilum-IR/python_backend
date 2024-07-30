@@ -11,3 +11,4 @@ class LoginSchema(BaseModel):
 class QuestionSchema(BaseModel):
     question:str
     history:list
+    personal_data:list
