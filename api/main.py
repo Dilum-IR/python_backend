@@ -14,7 +14,7 @@ import json
 # Add the parent directory to the system path
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from pydantic import BaseModel
+# from pydantic import BaseModel
 from Models.models import LoginSchema,SignUpSchema,QuestionSchema
 from api.suggetionsbot import SuggestionsBot
 
@@ -37,7 +37,7 @@ firebaseConfig = {
   "databaseURL":""
 }
 
-firebase = pyrebase.initialize_app(firebaseConfig)
+# firebase = pyrebase.initialize_app(firebaseConfig)
 
 @app.get("/")
 def read_root():
@@ -137,19 +137,19 @@ async def predict(request: QuestionSchema):
         return {
             "status_code": e.status_code,
             "msg": str(e.detail),
-            "suggestions": ""
+            "suggestions": []
         }
     except ValueError as e:
         return {
             "status_code": 400,
             "msg": str(e),
-            "suggestions": ""
+            "suggestions": []
         }
     except Exception as e:
         return {
             "status_code": 500,
             "msg": "An unexpected error occurred",
-            "suggestions": ""
+            "suggestions": []
         }
         # raise HTTPException(status_code=500, detail=str(e))
     
