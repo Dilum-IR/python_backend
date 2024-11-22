@@ -1,23 +1,16 @@
-# import pyrebase
-# import firebase_admin
-# from firebase_admin import credentials,auth
 from typing import Union
 from fastapi import FastAPI
 import uvicorn
-from fastapi.responses import JSONResponse
 from fastapi.exceptions import HTTPException
-from fastapi.requests import Request
 import sys
 import os
-import time
-import json
 import stripe
 
 # Add the parent directory to the system path
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 # from pydantic import BaseModel
-from Models.models import LoginSchema,SignUpSchema,QuestionSchema
+from Models.models import QuestionSchema
 from api.suggetionsbot import SuggestionsBot
 
 app = FastAPI()
@@ -50,33 +43,6 @@ def read_root():
 def read_item(id: int, q: Union[str, None] = None):
     return {"item_id": id, "q": q}
 
-
-# @app.post("/signup")
-# async def signup(user_data:SignUpSchema):
-
-#     try:
-#         user = auth.create_user(email=user_data.email,password=user_data.password)
-
-#         return JSONResponse(content={
-#             "message":f"Usesr account created user id is {user.uid}"
-#         },status_code=200,)
-#     except auth.EmailAlreadyExistsError:
-#         raise HTTPException(status_code=400,detail=f"Account already created for the {user_data.email}")
-
-
-# @app.post("/login")
-# async def creatae_access_token(user_data:LoginSchema):
-
-#     try:
-#         user = firebase.auth().sign_in_with_email_and_password(email=user_data.email,password=user_data.password)
-
-#         token = user['idToken']
-
-#         return JSONResponse(content={
-#             "token":f"User account token is {token}"
-#         },status_code=200,)
-#     except auth.EmailAlreadyExistsError:
-#         raise HTTPException(status_code=400,detail=f"Invalid credintials")
     
 # @app.post("/ping")
 # async def validate_token(request:Request):
@@ -101,7 +67,7 @@ def read_item(id: int, q: Union[str, None] = None):
 stripe.api_key = 'sk_test_51OXIY6SE8MZqjzvmoH00vOhSfKQiCrd8Ob14haVYbQclK18JJTgBEX9paKzRZ3dJ9SzdLa2bi4qhJPltKp0ESB9Y00IZwcuMrC'
 
 
-@app.get('/payment-sheet')
+@app.get("/payment-sheet")
 async def payment_sheet():
     customer = stripe.Customer.create()
     ephemeralKey = stripe.EphemeralKey.create(
@@ -128,7 +94,7 @@ async def payment_sheet():
 
 
 # current accurate endpoint
-@app.post("/predict/")
+@app.post("/predict")
 async def predict(request: QuestionSchema):
     try:
         response = bot.get_response(request.question, request.history)
