@@ -76,14 +76,14 @@ async def payment_sheet():
     )
 
     paymentIntent = stripe.PaymentIntent.create(
-        amount=1099,  # $10.99
+        amount=599,  # $5.99
         currency='usd',
         customer=customer['id'],
         description='Payment for EchoLink subscription',
         payment_method_types=['card'],
-        automatic_payment_methods={
-            'enabled': True,
-        },
+        # automatic_payment_methods={
+        #     'enabled': True,
+        # },
     )
     return {
         "paymentIntent": paymentIntent.client_secret,
