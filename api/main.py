@@ -2,6 +2,7 @@ from typing import Union
 from fastapi import FastAPI
 import uvicorn
 from fastapi.exceptions import HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import sys
 import os
 import stripe
@@ -19,6 +20,14 @@ bot = SuggestionsBot()
 # if not firebase_admin._apps:
 #     cred = credentials.Certificate("../serviceAccountKey.json")
 #     firebase_admin.initialize_app(cred)
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 firebaseConfig = {
