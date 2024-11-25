@@ -80,6 +80,7 @@ async def payment_sheet():
         currency='usd',
         customer=customer['id'],
         description='Payment for EchoLink subscription',
+        payment_method_types=['card'],
         automatic_payment_methods={
             'enabled': True,
         },
