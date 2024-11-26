@@ -81,7 +81,7 @@ async def payment_sheet():
     customer = stripe.Customer.create()
     ephemeralKey = stripe.EphemeralKey.create(
         customer=customer['id'],
-        stripe_version='2024-11-20.acacia',
+        stripe_version="2023-10-16",
     )
 
     paymentIntent = stripe.PaymentIntent.create(
@@ -89,10 +89,9 @@ async def payment_sheet():
         currency='usd',
         customer=customer['id'],
         description='Payment for EchoLink subscription',
-        payment_method_types=['card'],
-        # automatic_payment_methods={
-        #     'enabled': True,
-        # },
+        automatic_payment_methods={
+            'enabled': True,
+        },
     )
     return {
         "paymentIntent": paymentIntent.client_secret,
