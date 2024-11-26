@@ -5,8 +5,8 @@ from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import sys
 import os
+from dotenv import load_dotenv
 import stripe
-
 # Add the parent directory to the system path
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
@@ -20,6 +20,7 @@ bot = SuggestionsBot()
 # if not firebase_admin._apps:
 #     cred = credentials.Certificate("../serviceAccountKey.json")
 #     firebase_admin.initialize_app(cred)
+
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
@@ -28,18 +29,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+load_dotenv()
 
-
-firebaseConfig = {
-  "apiKey": "AIzaSyDEdwe8Wqep4SDmTDe2Ld3t75X8Y_rpnP0",
-  "authDomain": "echolynk-cf3ca.firebaseapp.com",
-  "projectId": "echolynk-cf3ca",
-  "storageBucket": "echolynk-cf3ca.appspot.com",
-  "messagingSenderId": "403359480178",
-  "appId": "1:403359480178:web:adc7a005a98e0f15bdc5eb",
-  "measurementId": "G-6HD5F25FMJ",
-  "databaseURL":""
-}
+# firebaseConfig = {
+#   "apiKey": "AIzaSyDEdwe8Wqep4SDmTDe2Ld3t75X8Y_rpnP0",
+#   "authDomain": "echolynk-cf3ca.firebaseapp.com",
+#   "projectId": "echolynk-cf3ca",
+#   "storageBucket": "echolynk-cf3ca.appspot.com",
+#   "messagingSenderId": "403359480178",
+#   "appId": "1:403359480178:web:adc7a005a98e0f15bdc5eb",
+#   "measurementId": "G-6HD5F25FMJ",
+#   "databaseURL":""
+# }
 
 # firebase = pyrebase.initialize_app(firebaseConfig)
 
@@ -69,11 +70,8 @@ def read_item(id: int, q: Union[str, None] = None):
 #         raise HTTPException(status_code=400,detail=f"Invalid authorization")
  
 
-# # This example sets up an endpoint using the Flask framework.
-# # Watch this video to get started: https://youtu.be/7Ul1vfmsDck.
-
-# # See your keys here: https://dashboard.stripe.com/apikeys
-stripe.api_key = 'sk_test_51OXIY6SE8MZqjzvmoH00vOhSfKQiCrd8Ob14haVYbQclK18JJTgBEX9paKzRZ3dJ9SzdLa2bi4qhJPltKp0ESB9Y00IZwcuMrC'
+stripe.api_key = os.getenv("STRIPE_PRIVATE_KEY")
+public_api_key = os.getenv("STRIPE_PUBLIC_KEY")
 
 
 @app.get("/payment-sheet")
@@ -97,7 +95,7 @@ async def payment_sheet():
         "paymentIntent": paymentIntent.client_secret,
         "ephemeralKey": ephemeralKey.secret,
         "customer": customer.id,
-        "publishableKey": 'pk_test_51OXIY6SE8MZqjzvm9EuoCGVCtkJGQxbcfxDxxJZ3ev7xvtTCUePz6liBSlMSMqibkvdbbxrccYlyrCixzUerS2SY00pEyJFQ0e'
+        "publishableKey": public_api_key
     }
 
 
