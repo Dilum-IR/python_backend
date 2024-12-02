@@ -123,7 +123,7 @@ async def predict(request: QuestionSchema):
         obj = {
             "status_code":200,
             "msg":"success",
-            "suggetions":["ha ha" , "I love you","I amd Dilum","how about you"]
+            "suggetions":response
         }
         return obj
 
