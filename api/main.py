@@ -36,12 +36,6 @@ load_dotenv()
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-
-
-@app.get("/items/{id}")
-def read_item(id: int, q: Union[str, None] = None):
-    return {"item_id": id, "q": q}
-
     
 # @app.post("/ping")
 # async def validate_token(request:Request):
@@ -72,7 +66,7 @@ async def payment_sheet():
     )
 
     paymentIntent = stripe.PaymentIntent.create(
-        amount=599,  # $5.99
+        amount=499,  # $4.99
         currency='usd',
         customer=customer['id'],
         description='Payment for EchoLink subscription',
@@ -87,6 +81,8 @@ async def payment_sheet():
         "publishableKey": public_api_key
     }
 
+# @app.get("/sign-detection")
+# async def sign_detection():
 
 
 # current accurate endpoint
@@ -120,15 +116,17 @@ async def predict(request: QuestionSchema):
             "suggestions": ""
         }
 
-@app.post("/predict_single")
+@app.post("/predict-single")
 async def predict(request: QuestionSchema):
     try:
         response = bot.get_single_response(request.question,request.history,request.personal_data)
-        return {
+        obj = {
             "status_code":200,
             "msg":"success",
             "suggetions":response
         }
+        return obj
+
     except HTTPException as e:
         return {
             "status_code": e.status_code,
