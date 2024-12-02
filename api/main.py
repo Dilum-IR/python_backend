@@ -123,7 +123,7 @@ async def predict(request: QuestionSchema):
         obj = {
             "status_code":200,
             "msg":"success",
-            "suggetions":response
+            "suggetions":["ha ha" , "I love you","I amd Dilum","how about you"]
         }
         return obj
 
@@ -131,19 +131,19 @@ async def predict(request: QuestionSchema):
         return {
             "status_code": e.status_code,
             "msg": str(e.detail),
-            "suggestions": []
+            "suggestions": ""
         }
     except ValueError as e:
         return {
             "status_code": 400,
             "msg": str(e),
-            "suggestions": []
+            "suggestions": ""
         }
     except Exception as e:
         return {
             "status_code": 500,
-            "msg": "An unexpected error occurred",
-            "suggestions": []
+            "msg": str(e.detail),
+            "suggestions": ""
         }
         # raise HTTPException(status_code=500, detail=str(e))
     
