@@ -89,7 +89,7 @@ async def payment_sheet():
 @app.post("/predict")
 async def predict(request: QuestionSchema):
     try:
-        response = bot.get_response(request.question, request.history)
+        response = await bot.get_response(request.question, request.history)
         obj = {
             "status_code":200,
             "msg":"success",
@@ -119,7 +119,7 @@ async def predict(request: QuestionSchema):
 @app.post("/predict-single")
 async def predict(request: QuestionSchema):
     try:
-        response = bot.get_single_response(request.question,request.history,request.personal_data)
+        response = await bot.get_single_response(request.question,request.history,request.personal_data)
         obj = {
             "status_code":200,
             "msg":"success",
