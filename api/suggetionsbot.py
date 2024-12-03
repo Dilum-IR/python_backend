@@ -38,13 +38,12 @@ class SuggestionsBot:
 
             {"Question": "Hi", "Answer": ["I am fine", "I am not good"]},
             {"Question": "Did you eat?", "Answer": ["Yes", "No"]},
+            {"Question": "Do you like to travel?", "Answer": ["Yes", "No"]},
             {"Question": "hey,Do you have a car?", "Answer": ["Yes", "No"]},
             {"Question": "Where are you now?", "Answer": ["In the home", "In the school", "another place"]},
             {"Question": "There is a car", "Answer": ["yeah I see, man"]},
             {"Question": "What is your favorite color?", "Answer": ["Red", "Blue", "Green", "Yellow", "Other"]},
             {"Question": "How old are you?", "Answer": ["10"]},
-            {"Question": "What is your occupation?", "Answer": ["I am a [job]."]},
-            {"Question": "Do you like to travel?", "Answer": ["Yes", "No"]},
             {"Question": "What is your favorite food?", "Answer": ["Pizza", "Burger", "Salad", "Pasta", "Other"]},
             {"Question": "What is the capital of France?", "Answer": ["Paris"]},
             {"Question": "Do you play any sports?", "Answer": ["Yes", "No"]},
@@ -61,9 +60,7 @@ class SuggestionsBot:
             {"Question": "Do you like reading books?", "Answer": ["Yes", "No"]},
             {"Question": "What is your favorite sport to watch?", "Answer": ["Soccer", "Basketball", "Baseball", "Tennis", "Other"]},
             {"Question": "Do you enjoy cooking?", "Answer": ["Yes", "No"]},
-            {"Question": "What is your dream job?", "Answer": ["[Job Title]"]},
             {"Question": "What is your favorite animal?", "Answer": ["Dog", "Cat", "Bird", "Fish", "Other"]},
-            {"Question": "What is your favorite TV show?", "Answer": ["[TV Show Title]"]},
             {"Question": "Do you like to exercise?", "Answer": ["Yes", "No"]},
             {"Question": "What is your favorite ice cream flavor?", "Answer": ["Chocolate", "Vanilla", "Strawberry", "Mint", "Other"]},
             {"Question": "Do you enjoy outdoor activities?", "Answer": ["Yes", "No"]},
@@ -74,7 +71,7 @@ class SuggestionsBot:
             {"Question": "Do you like watching movies?", "Answer": ["Yes", "No"]},
             {"Question": "What is your favorite thing to do on weekends?", "Answer": ["Relaxing", "Traveling", "Sports", "Reading", "Other"]},
             {"Question": "Do you have any siblings?", "Answer": ["Yes", "No"]},
-            {"Question": "What is your favorite holiday?", "Answer": ["Christmas", "Thanksgiving", "Halloween", "New Year", "Other"]},
+            {"Question": "What is your favorite holiday?", "Answer": ["Christmas", "Thanks giving", "Halloween", "New Year", "Other"]},
             {"Question": "Do you prefer sweet or savory snacks?", "Answer": ["Sweet", "Savory"]},
             {"Question": "What is your favorite fruit?", "Answer": ["Apple", "Banana", "Orange", "Grapes", "Other"]},
             {"Question": "Do you like to dance?", "Answer": ["Yes", "No"]},
@@ -92,7 +89,6 @@ class SuggestionsBot:
             {"Question": "Do you like to go camping?", "Answer": ["Yes", "No"]},
             {"Question": "What is your favorite type of tree?", "Answer": ["Oak", "Pine", "Maple", "Birch", "Other"]},
             {"Question": "Do you enjoy puzzles?", "Answer": ["Yes", "No"]},
-            {"Question": "What is your favorite thing to do in your free time?", "Answer": ["[Activity]"]},
             {"Question": "can you give me a pen?", "Answer": ["yeah I can","I don't have"]}
             
         ]
@@ -124,10 +120,12 @@ class SuggestionsBot:
 
         # define a system message (instruction) prompt
         system_prompt = """
+            Very Important things:
+            Generate suggestions that are relevant to a school setting. The suggestions should include examples like answers to common classroom questions, tips for studying, or advice for completing assignments. Focusing on the content of the suggestions with a school-appropriate tone.
             You are now not just a chatbot,
-            Please Response not give the ["I'm here to assist you"] this part
+            Please Response not give the ["I'm here to assist you"] as well as assist word include response.
             You are name is and email is include in the history. Please get the user name and email from the chat History
-            \n use the following context and example type response for answering the question.
+            \n use the above given context and following example type response for answering for the question.
             And Any user given questions for can give a multiple answers then you need to get above type multiple answers with list
             If you don't know the answers then only give the response ('I don't know.')
             \n
@@ -145,12 +143,14 @@ class SuggestionsBot:
 
             Example 4:
             Question : "What is your name ?"
-            Response : ["My name is (user given name include history get to for this position)"]
+            Response : ["My name is (user given name include history get to for this position if not include give a I don't know)"]
             \n
+
             Example 5:
             Question : "This is a car man."
             Response : ["Yeah I see man"]
             \n
+
             Example 6:
             Question : "sfsfdsfsdf."
             Response : ["I don't know"]
@@ -171,14 +171,15 @@ class SuggestionsBot:
             Response : ["I don't have" , "I don't know.","yes I can"]
             \n
             
-
-            1. Online Learning Platforms question asnwersing
-            Question: "I've been considering switching from traditional classroom learning to an online learning platform. What are your thoughts on online education compared to traditional methods ?"
-            Answer: [ "I think online learning offers a lot of flexibility and a wider range of courses. However, some people argue that it lacks the personal interaction and hands-on experience of traditional classrooms. What do you think are the biggest advantages and disadvantages? "]
+            Example 10:
+            Question : "what are you doing"
+            Response : ["Nothing special" , "you can suggest it","feeling well"]
+            \n
             
-            2. Remote Work vs. Office Work
-            Question: "Since the pandemic, many companies have shifted to remote work. Do you think remote work is more effective than working in an office? "
-            Answer: [ "That's a great question. Remote work allows for a better work-life balance and can save time and money on commuting. On the other hand, some people miss the social interactions and find it harder to separate work from home life. What's your take on it? "]
+            Example 11:
+            Question : "whats the problem dear"
+            Response : ["Nothing" , "I have some school problem","My friend is left from the school"]
+            \n
             
 
             If user asked question is QUESTION type then response needed list of multiple asnwers.
@@ -187,15 +188,16 @@ class SuggestionsBot:
             Guidelines:
             - If you have the personal detail, respond accurately.
             - If you can't understand. then response must be (I don't know)
-            - If you do not have the personal detail, respond with ["I don't know."] If you don't details for can genarate that personal details Question for list of choices then please response it.
+            - If you do not have the personal detail,please give a response as "I don't know." 
+            - If you don't details for can genarate that personal details Question for list of choices then please response it.
             - Every respose are needed Json array list type
             - Each asked questions for respnose needed JSON type array list (Response needed type is mention in the above).
-            - If you do ask question can give a multiple lis of answers then give a list of multiple answers.
             - If user asked questions then please give to the best suitable list of suggetions.
             - If user asked questions is not a question. It is like normal user's talking then give a some suitable response for it.
             - Keep your responses concise wherever possible unless you have to provide additional details.
+            - Response must have at least two, three or list of the elements.
             - Finally When user asked question related answer have in history then please answer that history include AIMessage for response.
-            - Response must have at least two, three or choices list of the elements
+            - Please You can genarate asked questions for it's related answers.
             \n\n
 
             """
@@ -215,15 +217,20 @@ class SuggestionsBot:
             # self.create_chat_prompt_template(personal_data)
             user_name = "My name is {name}. And you."
             user_email = "My email is {email}."
+            user_age = "I am {age} years old."
 
             new_name =  user_name.format(**personal_data[0])
             new_email =  user_email.format(**personal_data[1])
+            new_age =  user_age.format(**personal_data[2])
             
             history = [
                 HumanMessage(content="what is your name"), 
                 AIMessage(content=new_name), 
                 HumanMessage(content="what is your email"),
                 AIMessage(content=new_email),
+                AIMessage(content=new_name), 
+                HumanMessage(content="how old are you"),
+                AIMessage(content=new_age),
             ]
             
             # Insert history messages after the first messages
@@ -261,7 +268,7 @@ class SuggestionsBot:
             return ans
 
         except:
-            return []
+            return ["I don't know"]
 
     def get_response(self, user_input, history=[]):
 
